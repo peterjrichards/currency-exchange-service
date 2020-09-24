@@ -11,15 +11,17 @@ import java.math.BigDecimal;
 @RestController
 public class CurrencyExchangeController {
     private final Environment environment;
+    private final ExchangeValueRepository repository;
 
-    public CurrencyExchangeController(Environment environment) {
+    public CurrencyExchangeController(Environment environment, ExchangeValueRepository repository) {
         this.environment = environment;
+        this.repository = repository;
     }
 
     @GetMapping("/currency-exchange/from/{from}/to/{to}")       //where {from} and {to} are path variable
     public ExchangeValue retrieveExchangeValue(@PathVariable String from, @PathVariable String to)  //from map to USD and to map to INR
     {
-        ExchangeValue exchangeValue = new  ExchangeValue(1000L, from, to, BigDecimal.valueOf(65));
+        ExchangeValue exchangeValue=repository.findByFromAndTo(from,to);
         exchangeValue.setPort(Integer.parseInt(environment.getProperty("local.server.port")));
         return exchangeValue;
     }
